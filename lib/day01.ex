@@ -3,7 +3,6 @@ defmodule Day01 do
   Documentation for `Day01`.
   """
 
-
   @doc """
   Get the input from advent of code from https://adventofcode.com/2023/day/1/input
   However, you need to be logged into get your specific inputs
@@ -12,16 +11,15 @@ defmodule Day01 do
     File.read!("day01-input.txt")
     |> String.split("\n")
     |> Enum.map(fn x ->
-         String.replace(x, ~r/[^\d]/, "")
-       end)
+      String.replace(x, ~r/[^\d]/, "")
+    end)
     |> Enum.map(fn x ->
-         len=String.length(x)
-         String.at(x, 0) <> String.at(x, len-1)
-       end)
+      len = String.length(x)
+      String.at(x, 0) <> String.at(x, len - 1)
+    end)
     |> Enum.map(fn x -> String.to_integer(x) end)
     |> Enum.sum()
   end
-
 
   @doc """
   Get the input from advent of code from https://adventofcode.com/2023/day/1/input
@@ -48,14 +46,13 @@ defmodule Day01 do
     |> Enum.map(fn x -> Regex.replace(~r/eight/, x, "8", global: true) end)
     |> Enum.map(fn x -> Regex.replace(~r/nine/, x, "9", global: true) end)
     |> Enum.map(fn x ->
-         String.replace(x, ~r/[^\d]/, "")
-       end)
+      String.replace(x, ~r/[^\d]/, "")
+    end)
     |> Enum.map(fn x ->
-         len=String.length(x)
-         String.at(x, 0) <> String.at(x, len-1)
-       end)
+      len = String.length(x)
+      String.at(x, 0) <> String.at(x, len - 1)
+    end)
     |> Enum.map(fn x -> String.to_integer(x) end)
     |> Enum.sum()
   end
-
 end
