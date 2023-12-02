@@ -24,3 +24,5 @@ day01-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+.vscode

@@ -21,21 +21,21 @@ defmodule PullResult do
   """
   @spec parse_pull_result(String.t()) :: PullResult.t()
   def parse_pull_result(str) do
-    Regex.split(~r/,/,str)
+    Regex.split(~r/,/, str)
     |> Enum.map(fn x -> String.trim(x) end)
-    |> Enum.map(fn x -> Regex.split(~r/ /,x) end)
-    |> Enum.reduce(%PullResult{red: 0, blue: 0, green: 0}, fn (x,acc) ->
+    |> Enum.map(fn x -> Regex.split(~r/ /, x) end)
+    |> Enum.reduce(%PullResult{red: 0, blue: 0, green: 0}, fn x, acc ->
       value = String.to_integer(Enum.at(x, 0))
       color = Enum.at(x, 1)
+
       cond do
-        color == "blue" -> %{ acc | blue: value}
-        color == "green" -> %{ acc | green: value}
-        color == "red" -> %{ acc | red: value}
+        color == "blue" -> %{acc | blue: value}
+        color == "green" -> %{acc | green: value}
+        color == "red" -> %{acc | red: value}
         true -> raise "unknown"
       end
     end)
   end
-
 
   @doc """
   Parses a string into a list of PullResults
@@ -54,7 +54,6 @@ defmodule PullResult do
   def less_than_or_equal_to(lhs, rhs) do
     lhs.red <= rhs.red && lhs.blue <= rhs.blue && lhs.green <= rhs.green
   end
-
 end
 
 defmodule Game do
@@ -64,7 +63,6 @@ defmodule Game do
       Type that represents a game
   """
   @type t :: %Game{id: integer, pulls: list(PullResult.t())}
-
 
   defimpl String.Chars, for: Game do
     @spec to_string(Game.t()) :: String.t()
@@ -83,7 +81,6 @@ defmodule Game do
     String.to_integer(id)
   end
 
-
   @doc """
   Parses a line of text from the input into a Game type
   * line example:`Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue`
@@ -95,32 +92,58 @@ defmodule Game do
     pulls = PullResult.parse_pull_results(Enum.at(splits, 1))
     %Game{id: id, pulls: pulls}
   end
-
 end
 
 defmodule Day02 do
   @moduledoc """
   Documentation for `Day02`.
+  Get the input from advent of code from https://adventofcode.com/2023/day/2/input.
+  However, you need to be logged into get your specific inputs
   """
 
   @doc """
-  Get the input from advent of code from https://adventofcode.com/2023/day/2/input
-  However, you need to be logged into get your specific inputs
+  Calculate the minimum number of cubes needed for each color
+  in the bag to make all the draws possible.
+  """
+  @spec calculate_minimum_cubes(list(PullResult.t())) :: PullResult.t()
+  def calculate_minimum_cubes(pulls) do
+    Enum.reduce(pulls, %PullResult{red: 0, blue: 0, green: 0}, fn x, acc ->
+      red = max(acc.red, x.red)
+      blue = max(acc.blue, x.blue)
+      green = max(acc.green, x.green)
+      %{acc | red: red, blue: blue, green: green}
+    end)
+  end
+
+  @doc """
+  Sum the Game IDs if it was possible to have a PullResult
+  if the bag contained only 12 red cubes, 13 green cubes, and 14 blue cubes?
   """
   @spec sum_of_the_ids_of_possible_games(String.t()) :: integer()
   def sum_of_the_ids_of_possible_games(fileName) do
-
     max_pull = %PullResult{red: 12, green: 13, blue: 14}
 
     File.read!(fileName)
     |> String.split("\n")
     |> Enum.map(fn x -> Game.parse(x) end)
     |> Enum.filter(fn game ->
-         Enum.all?(game.pulls, fn x -> PullResult.less_than_or_equal_to(x, max_pull) end)
-       end)
+      Enum.all?(game.pulls, fn x -> PullResult.less_than_or_equal_to(x, max_pull) end)
+    end)
     |> Enum.map(fn game -> game.id end)
     |> Enum.sum()
-
   end
 
+  @doc """
+  Calculate the power for each game and sum them.
+  in the bad to make all the draws possible.
+  """
+  @spec calculate_power_of_games(String.t()) :: integer()
+  def calculate_power_of_games(fileName) do
+    File.read!(fileName)
+    |> String.split("\n")
+    |> Enum.map(fn x -> Game.parse(x) end)
+    |> Enum.map(fn game -> calculate_minimum_cubes(game.pulls) end)
+    |> Enum.map(fn pull -> pull.red * pull.green * pull.blue end)
+    |> Enum.sum()
+  end
 end
