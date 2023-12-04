@@ -25,6 +25,7 @@ will return.
   # The second run through, it is reversed, {5, 3} <<< my misunderstanding.
   # The result is {index, length}
   ```
+* Make sure you are solving the right problem
 
 # Day02
 ## Lessons Learned
