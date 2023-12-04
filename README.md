@@ -1,3 +1,31 @@
+# Day03
+## Lessons Learned
+* There was a lot of struggle with a misunderstanding that all structures are immutable. 
+The documentation has instructions for updating a Map with Map.put or %{mymap| a: "value"},
+but this is an illusion. Those function are returning a new map that needs to be assigned
+to a variable e.g., `mymap = %{myap | a: "value"}`.
+* There was also a struggle with scoping. One cannot update a variable external to a block.
+For instance, if you have `mymap = %{ a: "value"}`, and entered an `if` statement
+and update the map `mymap = %{mymap | a: "updated"}` you can use the updated mymap
+, but once exiting the block (a.k.a `if` statement) the original value `%{ a: "value"}`
+will return.
+* Decomposing the tuple is nice once you know how to do it.
+  ```
+  with {:ok, data} <- Day03.extract_first_number_range("467..114..") do
+    assert data.substring == "467"
+    assert data.indices == {0,3}
+  else
+    {:error, msg} -> raise msg
+  end
+  ```
+* Little misunderstanding with the `return: :index`
+  ```
+  indices = Regex.run(~r/\d+/, str, return: :index)
+  # The first time through it return the indices in order {0,3}. 
+  # The second run through, it is reversed, {5, 3} <<< my misunderstanding.
+  # The result is {index, length}
+  ```
+
 # Day02
 ## Lessons Learned
 * I had a problem with an Enum.all? result always returning false for the comparision
